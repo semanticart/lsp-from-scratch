@@ -3,6 +3,8 @@ import { documents, TextDocumentIdentifier } from "../../documents";
 import log from "../../log";
 import * as fs from "fs";
 
+const MAX_LENGTH = 1000;
+
 const words = fs.readFileSync("/usr/share/dict/words").toString().split("\n");
 
 type CompletionItem = {
@@ -42,13 +44,13 @@ export const completion = (message: RequestMessage): CompletionList | null => {
     .filter((word) => {
       return word.startsWith(currentPrefix);
     })
-    .slice(0, 1000)
+    .slice(0, MAX_LENGTH)
     .map((word) => {
       return { label: word };
     });
 
   return {
-    isIncomplete: true,
+    isIncomplete: items.length === MAX_LENGTH,
     items,
   };
 };
