@@ -2,6 +2,7 @@ import { RequestMessage } from "../../server";
 import { documents, TextDocumentIdentifier } from "../../documents";
 import log from "../../log";
 import * as fs from "fs";
+import { Position } from "../../types";
 
 const MAX_LENGTH = 1000;
 
@@ -14,11 +15,6 @@ type CompletionItem = {
 interface CompletionList {
   isIncomplete: boolean;
   items: CompletionItem[];
-}
-
-interface Position {
-  line: number;
-  character: number;
 }
 
 interface TextDocumentPositionParams {
