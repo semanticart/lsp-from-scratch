@@ -2,12 +2,9 @@ import { RequestMessage } from "../../server";
 import { Range } from "../../types";
 
 import log from "../../log";
-import * as fs from "fs";
+
 import { TextDocumentIdentifier, documents } from "../../documents";
-const dictionaryWords = fs
-  .readFileSync("/usr/share/dict/words")
-  .toString()
-  .split("\n");
+import { spellingSuggestions } from "../../spellingSuggestions";
 
 interface DocumentDiagnosticParams {
   textDocument: TextDocumentIdentifier;
@@ -22,12 +19,17 @@ namespace DiagnosticSeverity {
 
 type DiagnosticSeverity = 1 | 2 | 3 | 4;
 
-interface Diagnostic {
+interface SpellingSuggestionData {
+  wordSuggestions: string[];
+  type: "spelling-suggestion";
+}
+
+export interface Diagnostic {
   range: Range;
   severity: DiagnosticSeverity;
   source: "LSP From Scratch";
   message: string;
-  data?: unknown;
+  data: SpellingSuggestionData;
 }
 
 interface FullDocumentDiagnosticReport {
@@ -45,20 +47,28 @@ export const diagnostic = (
     return null;
   }
 
-  const wordsInDocument = content.split(/\W/);
+  const invalidWordsAndSuggestions: Record<string, string[]> =
+    spellingSuggestions(content);
 
-  const invalidWords = new Set(
-    wordsInDocument.filter((word) => !dictionaryWords.includes(word))
-  );
+  log.write({ spellingSuggestions: invalidWordsAndSuggestions });
 
   const items: Diagnostic[] = [];
-  const lines = content.split("\n");
 
-  invalidWords.forEach((invalidWord) => {
+  const contentLines = content.split("\n");
+
+  Object.keys(invalidWordsAndSuggestions).forEach((invalidWord) => {
     const regex = new RegExp(`\\b${invalidWord}\\b`, "g");
+    const wordSuggestions = invalidWordsAndSuggestions[invalidWord];
 
-    lines.forEach((line, lineNumber) => {
+    const message = wordSuggestions.length
+      ? `${invalidWord} isn't in our dictionary. Did you mean: ${wordSuggestions.join(
+          ", "
+        )}`
+      : `${invalidWord} isn't in our dictionary.`;
+
+    contentLines.forEach((line, lineNumber) => {
       let match;
+
       while ((match = regex.exec(line)) !== null) {
         items.push({
           source: "LSP From Scratch",
@@ -70,7 +80,11 @@ export const diagnostic = (
               character: match.index + invalidWord.length,
             },
           },
-          message: `${invalidWord} is not in our dictionary.`,
+          message,
+          data: {
+            wordSuggestions,
+            type: "spelling-suggestion",
+          },
         });
       }
     });

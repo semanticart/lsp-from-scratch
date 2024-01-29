@@ -1,4 +1,4 @@
-type DocumentUri = string;
+export type DocumentUri = string;
 type DocumentBody = string;
 
 export interface TextDocumentIdentifier {

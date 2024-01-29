@@ -19,6 +19,7 @@ export const initialize = (message: RequestMessage): InitializeResult => {
         interFileDependencies: false,
         workspaceDiagnostics: false,
       },
+      codeActionProvider: true,
     },
     serverInfo: {
       name: "lsp-from-scratch",
