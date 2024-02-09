@@ -1,15 +1,25 @@
 {
-  "name": "REPLACE_ME",
-  "description": "REPLACE_ME",
+  "name": "lsp-from-scratch",
+  "description": "lsp-from-scratch",
   "version": "1.0.0",
-  "author": "REPLACE_ME",
+  "author": "Jeffrey Chupp",
   "license": "MIT",
+  "test": "jest",
+  "scripts": {
+    "test": "jest"
+  },
   "engines": {
     "node": "*"
   },
   "repository": {
     "type": "git",
-    "url": "REPLACE_ME"
+    "url": "https://github.com/semanticart/lsp-from-scratch"
   },
-  "dependencies": {}
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "ts-jest": "^29.1.2"
+  },
+  "dependencies": {
+    "vscode-languageserver": "^9.0.1"
+  }
 }
