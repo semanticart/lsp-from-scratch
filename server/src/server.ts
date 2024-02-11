@@ -1,5 +1,7 @@
 import log from "./log";
+import { exit } from "./methods/exit";
 import { initialize } from "./methods/initialize";
+import { shutdown } from "./methods/shutdown";
 import { codeAction } from "./methods/textDocument/codeAction";
 import { completion } from "./methods/textDocument/completion";
 import { diagnostic } from "./methods/textDocument/diagnostic";
@@ -19,7 +21,7 @@ export interface RequestMessage extends NotificationMessage {
 }
 
 type RequestMethod = (
-  message: RequestMessage
+  message: RequestMessage,
 ) =>
   | ReturnType<typeof initialize>
   | ReturnType<typeof completion>
@@ -29,7 +31,9 @@ type RequestMethod = (
 type NotificationMethod = (message: NotificationMessage) => void;
 
 const methodLookup: Record<string, RequestMethod | NotificationMethod> = {
+  exit,
   initialize,
+  shutdown,
   "textDocument/completion": completion,
   "textDocument/didChange": didChange,
   "textDocument/diagnostic": diagnostic,
