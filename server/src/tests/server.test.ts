@@ -5,6 +5,7 @@ import type {
   CodeAction,
   CompletionList,
   FullDocumentDiagnosticReport,
+  Hover,
 } from "vscode-languageserver";
 
 import { LanguageServerWrapper } from "./language-server-wrapper";
@@ -278,5 +279,44 @@ describe("lsp-from-scratch", () => {
         },
       },
     ]);
+  });
+
+  test("hover definitions", async () => {
+    await init();
+
+    didChange("Functional programming is a thing.");
+
+    const definitionResponse = await languageServer.request(
+      "textDocument/hover",
+      {
+        textDocument: { uri: defaultFile },
+        position: { line: 0, character: 14 },
+      },
+    );
+
+    const expectedDefinitionBody = `
+programming
+-----------
+
+n 1: setting an order and time for planned events [syn:
+     {scheduling}, {programming}, {programing}]
+
+2: creating a sequence of instructions to enable the computer to
+   do something [syn: {programming}, {programing}, {computer
+   programming}, {computer programing}]
+    `.trim();
+
+    const expectedHover: Hover = {
+      contents: {
+        kind: "markdown",
+        value: expectedDefinitionBody,
+      },
+      range: {
+        start: { line: 0, character: 11 },
+        end: { line: 0, character: 22 },
+      },
+    };
+
+    expect(definitionResponse).toStrictEqual(expectedHover);
   });
 });
