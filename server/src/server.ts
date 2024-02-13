@@ -6,6 +6,7 @@ import { codeAction } from "./methods/textDocument/codeAction";
 import { completion } from "./methods/textDocument/completion";
 import { diagnostic } from "./methods/textDocument/diagnostic";
 import { didChange } from "./methods/textDocument/didChange";
+import { didOpen } from "./methods/textDocument/didOpen";
 import { hover } from "./methods/textDocument/hover";
 
 interface Message {
@@ -38,6 +39,7 @@ const methodLookup: Record<string, RequestMethod | NotificationMethod> = {
   shutdown,
   "textDocument/completion": completion,
   "textDocument/didChange": didChange,
+  "textDocument/didOpen": didOpen,
   "textDocument/diagnostic": diagnostic,
   "textDocument/codeAction": codeAction,
   "textDocument/hover": hover,

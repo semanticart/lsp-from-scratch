@@ -25,6 +25,16 @@ const init = async () => {
 
 const documentVersion = new Map<string, number>();
 
+const didOpen = (text: string, uri: string = defaultFile) => {
+  const version = documentVersion.get(uri) ?? 1;
+
+  languageServer.notify("textDocument/didOpen", {
+    textDocument: { uri, version, text },
+  });
+
+  documentVersion.set(uri, version + 1);
+};
+
 const didChange = (text: string, uri: string = defaultFile) => {
   const version = documentVersion.get(uri) ?? 1;
 
@@ -63,7 +73,7 @@ describe("lsp-from-scratch", () => {
 
   test("can initialize and give completions", async () => {
     await init();
-    didChange("Hello, world! a");
+    didOpen("Hello, world! a");
 
     const completionResponse1 = await completionRequest({
       line: 0,
@@ -113,7 +123,7 @@ describe("lsp-from-scratch", () => {
   test("spelling suggestions", async () => {
     await init();
 
-    didChange("helllo there, sallly");
+    didOpen("helllo there, sallly");
 
     const diagnostics = (await languageServer.request(
       "textDocument/diagnostic",
@@ -284,7 +294,7 @@ describe("lsp-from-scratch", () => {
   test("hover definitions", async () => {
     await init();
 
-    didChange("Functional programming is a thing.");
+    didOpen("Functional programming is a thing.");
 
     const definitionResponse = await languageServer.request(
       "textDocument/hover",
