@@ -20,6 +20,7 @@ export const initialize = (message: RequestMessage): InitializeResult => {
         workspaceDiagnostics: false,
       },
       codeActionProvider: true,
+      hoverProvider: true,
     },
     serverInfo: {
       name: "lsp-from-scratch",
